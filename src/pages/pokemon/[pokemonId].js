@@ -2,6 +2,8 @@ import Image from "next/image"
 
 import styles from '../../styles/Pokemon.module.css'
 
+import { useRouter } from "next/router"
+
 export const getStaticPaths = async () => {
     const maxPokemons = 251
     const api = 'https://pokeapi.co/api/v2/pokemon/'
@@ -18,7 +20,8 @@ export const getStaticPaths = async () => {
 
     return {
         paths,
-        fallback: false,
+        //fallback: false, carrega apenas os pokemons que setamos no limite na linha 8
+        fallback: true, // com useRouter nos permite carregar mais pokemos fazendo um callback pra esperar buscar na api igual fizemos na linha 43 a 46
     }
 
 }
@@ -36,7 +39,15 @@ export const getStaticProps = async (context) => {
 }
 
 export default function Pokemon({pokemon}) {
+
+    const router = useRouter()
+    if(router.isFallback) {
+        return <di>Carregando ...</di>
+    }
+
     const sprite = pokemon.sprites.other['official-artwork'].front_default;
+
+
     return(
         <div className={styles.pokemon_container}> 
             <h1 className={styles.title}>{pokemon.name}</h1>
